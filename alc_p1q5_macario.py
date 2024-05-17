@@ -1,7 +1,7 @@
 def inversa_eliminacao(A):
     n = len(A)
     
-    # Verificar se há elementos nulos na diagonal principal
+    # Verificação de elementos nulos na diagonal principal
     for i in range(n):
         if A[i][i] == 0:
             raise ValueError("A matriz possui elementos nulos na diagonal. Use uma função alternativa para calcular a matriz inversa.")
@@ -11,11 +11,19 @@ def inversa_eliminacao(A):
     
     # Eliminação
     for i in range(n):
-        # Pivoteamento parcial para evitar divisão por zero
-        max_row = max(range(i, n), key=lambda r: abs(AI_matrix[r][i]))
+        
+        # Verificação de maior valor absoluto na coluna
+        max_row = i
+        max_value = abs(AI_matrix[i][i])
+        for k in range(i + 1, n):
+            if abs(AI_matrix[k][i]) > max_value:
+                max_value = abs(AI_matrix[k][i])
+                max_row = k
+                
+        # Trocar a linha atual com a linha com o maior valor absoluto na coluna 
         AI_matrix[i], AI_matrix[max_row] = AI_matrix[max_row], AI_matrix[i]
         
-        # Verifica se o pivô é zero após o pivoteamento
+        # Verificação se o pivô é zero após o pivoteamento
         if AI_matrix[i][i] == 0:
             raise ValueError("A matriz não possui inversa.")
 
@@ -23,11 +31,12 @@ def inversa_eliminacao(A):
         pivot = AI_matrix[i][i]
         AI_matrix[i] = [x / pivot for x in AI_matrix[i]]
 
-        # Elimina as outras entradas na coluna do pivô
+        # Subtração de uma linha por outra
         for j in range(n):
             if j != i:
                 factor = AI_matrix[j][i]
-                AI_matrix[j] = [aj - factor * ai for aj, ai in zip(AI_matrix[j], AI_matrix[i])]
+                for k in range(len(AI_matrix[i])):
+                    AI_matrix[j][k] -= factor * AI_matrix[i][k]
 
     # Extrai a matriz inversa da matriz aumentada
     inv_matrix = [row[n:] for row in AI_matrix]
